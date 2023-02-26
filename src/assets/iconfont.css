@@ -11,6 +11,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-guanji:before {
+  content: "\e628";
+}
+
 .icon-menu-hamburger:before {
   content: "\e8f2";
 }
