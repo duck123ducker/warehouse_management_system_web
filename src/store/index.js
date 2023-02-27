@@ -6,5 +6,11 @@ export const useStore = defineStore('store', () => {
   function collapse() {
     isAsideCollapse.value = !isAsideCollapse.value
   }
-  return { isAsideCollapse, collapse }
+  const tabs = ref([])
+  function updateTabs(name, path) {
+    if (!tabs.value.find(item => item === name)) {
+      tabs.value.push({ name: name, path: path })
+    }
+  }
+  return { isAsideCollapse, collapse, tabs, updateTabs }
 })

@@ -29,8 +29,9 @@ module.exports = {
     'no-mixed-spaces-and-tabs': 'error', // 不能空格与tab混用
     quotes: [2, 'single'],// 使用单引号
     'vue/html-closing-bracket-newline': 'off', // 不强制换行
-    'vue/singleline-html-element-content-newline': 'off', // 不强制换行
+    'vue/singleline-html-element-content-newline': 'off',
     'vue/multi-word-component-names': 'off',
-    'space-before-function-paren': 'off'
+    'space-before-function-paren': 'off',
+    'object-shorthand': 'off'
   }
 }
