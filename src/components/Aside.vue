@@ -10,9 +10,9 @@
         </div>
       </div>
       <div class="menu">
-        <el-tooltip v-for="(subMenu, index) in subMenus" :key="index" :visible="subMenu.visible" placement="right" :content="subMenu.des" :offset="25">
+        <el-tooltip v-for="subMenu in subMenus" :key="subMenu.des" :visible="subMenu.visible" placement="right" :content="subMenu.des" :offset="25">
           <div>
-            <div class="row-2" @mouseover="subMenu.visible = !!isAsideCollapse" @mouseleave="subMenu.visible = false">
+            <div class="row-2" @click="goPage(subMenu.des)" @mouseover="subMenu.visible = !!isAsideCollapse" @mouseleave="subMenu.visible = false">
               <component :is="subMenu.icon" style="height: 16px; width: 16px; color: white;"/>
               <div v-if="!isAsideCollapse" class="text">
                 {{subMenu.des}}
@@ -26,17 +26,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { HomeFilled, Box, UserFilled } from '@element-plus/icons-vue'
 import { storeToRefs } from 'pinia'
 import { useStore } from '../store/index.js'
 const store = useStore()
-const { isAsideCollapse } = storeToRefs(store)
-const subMenus = ref([
-  { icon: HomeFilled, des: '首页', visible: false },
-  { icon: Box, des: '包裹管理', visible: false },
-  { icon: UserFilled, des: '员工管理', visible: false }
-])
+const { goPage } = store
+const { isAsideCollapse, subMenus } = storeToRefs(store)
 </script>
 
 <style lang="scss" scoped>

@@ -12,10 +12,10 @@
       </div>
     </div>
     <div class="tags-container">
-      <div v-for="tag in tabs" :key="tag.name" class="tag-container">
+      <div v-for="subMenu in subMenus.filter(sub => sub.is_open)" :key="subMenu.des" @click="goPage(subMenu.des)" :class="['tag-container', {isShow: subMenu.is_show}]">
         <div class="dot"/>
-        {{ tag.name }}
-        <Close style="margin-left: 3px ;height: 16px; width: 16px;"/>
+        {{ subMenu.des }}
+        <Close @click.stop="closePage(subMenu.des)" style="margin-left: 3px ;height: 16px; width: 16px;"/>
       </div>
     </div>
   </div>
@@ -26,8 +26,8 @@ import { storeToRefs } from 'pinia'
 import { useStore } from '../store/index.js'
 import { Close } from '@element-plus/icons-vue'
 const store = useStore()
-const { isAsideCollapse, tabs } = storeToRefs(store)
-const { collapse } = store
+const { isAsideCollapse, subMenus } = storeToRefs(store)
+const { collapse, goPage, closePage } = store
 </script>
 
 <style lang="scss" scoped>
@@ -84,16 +84,23 @@ const { collapse } = store
     display: flex;
     align-items: center;
     font-size: 14px;
-    color: white;
-    background: #09f;
-    padding: 0 5px;
+    padding: 0 5px 0 10px;
     border-radius: 5px;
-    .dot {
-      width: 10px;
-      height: 10px;
-      background: white;
-      border-radius: 5px;
-      margin-right: 3px;
+    border: 1px #d5d5d5 solid;
+    &:hover {
+      cursor: pointer;
+    }
+    &.isShow {
+      background: #09f;
+      color: white;
+      border: none;
+      .dot {
+        width: 10px;
+        height: 10px;
+        background: white;
+        border-radius: 5px;
+        margin-right: 3px;
+      }
     }
   }
 }

@@ -32,6 +32,8 @@ module.exports = {
     'vue/singleline-html-element-content-newline': 'off',
     'vue/multi-word-component-names': 'off',
     'space-before-function-paren': 'off',
-    'object-shorthand': 'off'
+    'object-shorthand': 'off',
+    'no-unused-vars': 'off',
+    'keyword-spacing': 'off'
   }
 }

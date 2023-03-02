@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../page/Home.vue'
+import Main from '../page/Main.vue'
+import NotFound from '../page/NotFound.vue'
 const routes = [
-  { path: '/', redirect: '/home' },
-  { path: '/home', component: Home }
+  { path: '/', component: Main },
+  { path: '/:pathMatch(.*)', component: NotFound }
 ]
 const router = createRouter({
   history: createWebHistory(),
