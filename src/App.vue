@@ -7,7 +7,9 @@
       <div class="header">
         <Header/>
       </div>
-      <router-view/>
+      <div class="main">
+        <router-view/>
+      </div>
     </div>
   </div>
 </template>
@@ -33,6 +35,10 @@ import Aside from './components/Aside.vue'
     flex: 1 1;
     .header {
       height: 110px;
+    }
+    .main {
+      height: calc(100vh - 110px);
+      overflow: auto;
     }
   }
 }

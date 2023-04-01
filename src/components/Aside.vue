@@ -85,8 +85,13 @@ const { isAsideCollapse, subMenus } = storeToRefs(store)
       display: flex;
       flex-direction: column;
       align-items: center;
-      .row-2 {
-        padding: 0;
+      .menu {
+        width: 100%;
+        .row-2 {
+          padding: 0;
+          justify-content: center;
+          display: flex;
+        }
       }
     }
   }
