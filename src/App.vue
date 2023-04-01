@@ -32,7 +32,6 @@ import Aside from './components/Aside.vue'
   .col-2 {
     flex: 1 1;
     .header {
-      width: 100%;
       height: 110px;
     }
   }
