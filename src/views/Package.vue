@@ -1,56 +1,29 @@
 <template>
   <div v-loading="isLoading">
-    <div style="display: flex; align-items: center; flex-direction: column;">
-      <el-table :data="tableData" stripe style="width: 100%; margin-bottom: 10px;">
-        <el-table-column align="center" prop="id" label="编码"/>
-        <el-table-column align="center" prop="name" label="名称"/>
-        <el-table-column align="center" prop="num" label="库存" />
-        <el-table-column align="center" fixed="right" label="操作">
-          <template #default="scope">
-            <el-button
-                link
-                type="primary"
-                size="small"
-                @click.prevent="edit(scope.$index)"
-            >
-              修改
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination
-          layout="prev, pager, next, jumper"
-          :total="totalStatic.total_num"
-          :page-size="20"
-          v-model:current-page="currentPage"
-          :background="true"
-      />
+    <div style="margin: 10px;">
+      <el-input v-model="inputSearch" placeholder="请输入查询关键词">
+        <template #prepend>
+          <el-select v-model="select" placeholder="Select" style="width: 115px">
+            <el-option label="编码" value="id" />
+            <el-option label="名称" value="name" />
+          </el-select>
+        </template>
+        <template #append>
+          <el-button @click="search_" :icon="Search"/>
+        </template>
+      </el-input>
     </div>
-    <div>
-      <el-dialog v-model="dialogFormVisible" :close-on-press-escape="false" :close-on-click-modal="false" :show-close="false" width="25%">
-        <div v-loading="isLoadingDialog">
-          <div style="text-align: center; font-weight: 900; margin-bottom: 15px;">
-            修改信息
-          </div>
-          <el-form ref="form" :model="currentPack.info" :rules="rules">
-            <el-form-item label="编码" prop="id">
-              <el-input disabled v-model="currentPack.info.id"/>
-            </el-form-item>
-            <el-form-item label="名称" prop="name">
-              <el-input v-model="currentPack.info.name"/>
-            </el-form-item>
-            <el-form-item label="库存" prop="num">
-              <el-input-number :min="0" v-model.number="currentPack.info.num"/>
-            </el-form-item>
-          </el-form>
-          <div style="display: flex; justify-content: space-between;">
-            <el-button @click="dialogFormVisible = false">取消</el-button>
-            <el-button type="primary" @click="submit">
-              确定
-            </el-button>
-          </div>
-        </div>
-      </el-dialog>
+    <div style="margin: 10px 10px 0; position: relative;" v-show="!isSearching">
+      <table-page :refresh="refresh" :totalNums="totalStatic.total_num" :table-data="tableData" type_="all"
+                  @pageChange="pageChange" @tableDataUpdate="((index, value)=>{tableData[index] = value})"
+      ></table-page>
+      <Refresh @click="refresh = true;" class="back"/>
+    </div>
+    <div style="margin: 10px 10px 0; position: relative;" v-if="isSearching">
+      <table-page :totalNums="searchResult.total_num" :table-data="searchResult.tableData" type_="search"
+                  @pageChange="pageChange" @tableDataUpdate="((index, value)=>{searchResult.tableData[index] = value})"
+      ></table-page>
+      <ArrowLeft @click="refresh = true; isSearching = false; searchResult = {tableData: [], total_num: 0}" class="back"/>
     </div>
   </div>
 </template>
@@ -58,70 +31,56 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useStore } from '../store/index.js'
-import { reactive, ref, watch } from 'vue'
+import { ref, nextTick } from 'vue'
 import request from '../utils/request.js'
-import { ElMessage } from 'element-plus'
+import { Search, ArrowLeft, Refresh } from '@element-plus/icons-vue'
+import TablePage from './TablePage.vue'
 
-const form = ref(null)
-const dialogFormVisible = ref(false)
+const isSearching = ref(false)
+const searchField = ref(null)
+const searchValue = ref(null)
+const searchResult = ref({
+  tableData: [],
+  total_num: 0
+})
+const tableData = ref([])
+const select = ref('id')
+const inputSearch = ref('')
 const isLoading = ref(true)
-const isLoadingDialog = ref(false)
+const refresh = ref(false)
 const store = useStore()
 const { totalStatic } = storeToRefs(store)
-const currentPage = ref(1)
-const tableData = ref([])
-const currentPack = ref({
-  index: null,
-  info: {}
-})
-watch(currentPage, () => {
+async function search_() {
+  searchField.value = select.value
+  searchValue.value = inputSearch.value
+  isSearching.value = false
+  await nextTick()
+  isSearching.value = true
+}
+function pageChange(newPage, type_) {
   isLoading.value = true
-  request.get('/all_pack', {
-    params: {
-      page: currentPage.value
-    }
-  }).then(res => {
-    isLoading.value = false
-    tableData.value = res.data
-  })
-}, { immediate: true })
-function edit(index) {
-  currentPack.value.info = JSON.parse(JSON.stringify(tableData.value[index]))
-  currentPack.value.index = index
-  dialogFormVisible.value = true
+  if(type_ === 'all') {
+    request.get('/all_pack', {
+      params: {
+        page: newPage
+      }
+    }).then(res => {
+      tableData.value = res.data
+      isLoading.value = false
+      refresh.value = false
+    })
+  }else if(type_ === 'search') {
+    request.get('/search_pack', {
+      params: {
+        [searchField.value]: searchValue.value,
+        page: newPage
+      }
+    }).then(res => {
+      searchResult.value = res.data
+      isLoading.value = false
+    })
+  }
 }
-function submit() {
-  form.value.validate((valid) => {
-    if(valid) {
-      isLoadingDialog.value = true
-      // eslint-disable-next-line camelcase
-      const { access_log, ...formData_ } = currentPack.value.info
-      request.post('/modify', formData_).then(res => {
-        if(res.data === 'success') {
-          isLoadingDialog.value = false
-          tableData.value[currentPack.value.index] = currentPack.value.info
-          dialogFormVisible.value = false
-          ElMessage.success('修改成功！')
-        }
-      })
-    }else {
-      ElMessage.error('请正确填写信息！')
-    }
-  })
-}
-const rules = reactive({
-  id: [
-    { required: true, message: '请输入ID', trigger: 'blur' }
-  ],
-  name: [
-    { required: true, message: '请输入名称', trigger: 'blur' },
-    { min: 2, max: 10, message: '长度在2到10个字之内', trigger: 'blur' }
-  ],
-  num: [
-    { required: true, message: '请输入库存', trigger: 'blur' },
-    { type: 'number', message: '必须是数字', trigger: 'blur' }
-  ]
-})
 </script>
 
 <style lang="scss" scoped>
@@ -131,16 +90,16 @@ const rules = reactive({
 :deep(.el-table .el-table__cell) {
   padding: 7px 0;
 }
-:deep(.el-dialog) {
-  min-width: 250px;
-  .el-dialog__header {
-    padding: 0;
+.back {
+  color: #a8abb2;
+  height: 16px;
+  width: 16px;
+  position: absolute;
+  left: 5px;
+  top: 11px;
+  z-index: 2000;
+  &:hover {
+    cursor: pointer;
   }
-  .el-dialog__body {
-    padding: 15px 20px;
-  }
-}
-:deep(.el-loading-mask) {
-  z-index: 9999;
 }
 </style>

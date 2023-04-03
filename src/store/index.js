@@ -6,6 +6,9 @@ import Package from '../views/Package.vue'
 import Staff from '../views/Staff.vue'
 
 export const useStore = defineStore('store', () => {
+  const token = ref(localStorage.getItem('token'))
+  const login = ref(false)
+  if(!token.value) login.value = true
   const isAsideCollapse = ref(false)
   function collapse() {
     isAsideCollapse.value = !isAsideCollapse.value
@@ -38,5 +41,5 @@ export const useStore = defineStore('store', () => {
     }
   }
   const totalStatic = ref({})
-  return { isAsideCollapse, collapse, subMenus, goPage, closePage, totalStatic }
+  return { isAsideCollapse, collapse, subMenus, goPage, closePage, totalStatic, token, login }
 })

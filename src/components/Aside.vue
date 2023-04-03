@@ -10,7 +10,7 @@
         </div>
       </div>
       <div class="menu">
-        <el-tooltip v-for="subMenu in subMenus" :key="subMenu.des" :visible="subMenu.visible" placement="right" :content="subMenu.des" :offset="25">
+        <el-tooltip v-for="subMenu in subMenus" :key="subMenu.des" :visible="subMenu.visible" placement="right" :content="subMenu.des" :offset="5">
           <div>
             <div class="row-2" @click="goPage(subMenu.des)" @mouseover="subMenu.visible = !!isAsideCollapse" @mouseleave="subMenu.visible = false">
               <component :is="subMenu.icon" style="height: 16px; width: 16px; color: white;"/>
