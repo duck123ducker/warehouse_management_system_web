@@ -7,7 +7,7 @@ const req = axios.create({
 req.interceptors.request.use(
   config => {
     const store = useStore()
-    config.headers.token = store.token
+    config.headers.Authorization = 'Bearer ' + store.token
     return config
   }
 )

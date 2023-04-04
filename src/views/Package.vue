@@ -14,16 +14,16 @@
       </el-input>
     </div>
     <div style="margin: 10px 10px 0; position: relative;" v-show="!isSearching">
-      <table-page :refresh="refresh" :totalNums="totalStatic.total_num" :table-data="tableData" type_="all"
+      <table-page :refresh="refresh" :totalNums="totalStatic.pack_num" :table-data="tableData" type_="all"
                   @pageChange="pageChange" @tableDataUpdate="((index, value)=>{tableData[index] = value})"
       ></table-page>
-      <Refresh @click="refresh = true;" class="back"/>
+      <Refresh @click="refresh = true;" class="my-icon"/>
     </div>
     <div style="margin: 10px 10px 0; position: relative;" v-if="isSearching">
       <table-page :totalNums="searchResult.total_num" :table-data="searchResult.tableData" type_="search"
                   @pageChange="pageChange" @tableDataUpdate="((index, value)=>{searchResult.tableData[index] = value})"
       ></table-page>
-      <ArrowLeft @click="refresh = true; isSearching = false; searchResult = {tableData: [], total_num: 0}" class="back"/>
+      <ArrowLeft @click="refresh = true; isSearching = false; searchResult = {tableData: [], total_num: 0}" class="my-icon"/>
     </div>
   </div>
 </template>
@@ -90,7 +90,7 @@ function pageChange(newPage, type_) {
 :deep(.el-table .el-table__cell) {
   padding: 7px 0;
 }
-.back {
+.my-icon {
   color: #a8abb2;
   height: 16px;
   width: 16px;
