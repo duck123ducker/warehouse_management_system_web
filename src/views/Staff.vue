@@ -129,7 +129,7 @@ const rules = ref({
   ],
   nick_name: [
     { required: true, message: '必须填写名称', trigger: 'blur' },
-    { min: 5, max: 20, message: '长度在5到20个字符之内', trigger: 'blur' },
+    { min: 2, max: 20, message: '长度在2到20个字符之内', trigger: 'blur' },
     { validator: validateName, trigger: 'blur' }
   ],
   role: [
