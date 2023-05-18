@@ -8,7 +8,7 @@
         <Header/>
       </div>
       <div v-if="!login" class="main">
-        <router-view/>
+        <Main/>
       </div>
     </div>
     <login/>
@@ -21,7 +21,11 @@ import Aside from './components/Aside.vue'
 import Login from './views/login.vue'
 import { useStore } from './store/index.js'
 import { storeToRefs } from 'pinia'
+import { provide } from 'vue'
 
+import * as echarts from 'echarts'
+import Main from '@/page/Main.vue'
+provide('echarts', echarts)
 const store = useStore()
 const { login } = storeToRefs(store)
 </script>

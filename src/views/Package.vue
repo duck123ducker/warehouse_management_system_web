@@ -14,8 +14,8 @@
       </el-input>
     </div>
     <div style="margin: 10px 10px 0; position: relative;" v-show="!isSearching">
-      <table-page :refresh="refresh" :totalNums="totalStatic.pack_num" :table-data="tableData" type_="all"
-                  @pageChange="pageChange" @tableDataUpdate="((index, value)=>{tableData[index] = value})"
+      <table-page :refresh="refresh" :totalNums="allResult.total_num" :table-data="allResult.tableData" type_="all"
+                  @pageChange="pageChange" @tableDataUpdate="((index, value)=>{allResult.tableData[index] = value})"
       ></table-page>
       <Refresh @click="refresh = true;" class="my-icon"/>
     </div>
@@ -29,8 +29,6 @@
 </template>
 
 <script setup>
-import { storeToRefs } from 'pinia'
-import { useStore } from '../store/index.js'
 import { ref, nextTick } from 'vue'
 import request from '../utils/request.js'
 import { Search, ArrowLeft, Refresh } from '@element-plus/icons-vue'
@@ -43,13 +41,14 @@ const searchResult = ref({
   tableData: [],
   total_num: 0
 })
-const tableData = ref([])
+const allResult = ref({
+  tableData: [],
+  total_num: 0
+})
 const select = ref('id')
 const inputSearch = ref('')
 const isLoading = ref(true)
 const refresh = ref(false)
-const store = useStore()
-const { totalStatic } = storeToRefs(store)
 async function search_() {
   searchField.value = select.value
   searchValue.value = inputSearch.value
@@ -65,7 +64,7 @@ function pageChange(newPage, type_) {
         page: newPage
       }
     }).then(res => {
-      tableData.value = res.data
+      allResult.value = res.data
       isLoading.value = false
       refresh.value = false
     })

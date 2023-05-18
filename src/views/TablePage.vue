@@ -14,6 +14,14 @@
           >
             修改
           </el-button>
+          <el-button
+              link
+              type="primary"
+              size="small"
+              @click.prevent="showAccessLog(scope.$index)"
+          >
+            操作记录
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -50,6 +58,9 @@
         </div>
       </div>
     </el-dialog>
+    <el-dialog v-model="accessLogVisible" :close-on-press-escape="false" :show-close="false" width="fit-content">
+      <access-log v-if="accessLogVisible" :target="accessLogProps.target" :id="accessLogProps.id"/>
+    </el-dialog>
   </div>
 </template>
 
@@ -57,6 +68,7 @@
 import { reactive, ref, watch } from 'vue'
 import request from '../utils/request.js'
 import { ElMessage } from 'element-plus'
+import AccessLog from './accessLog.vue'
 
 const props = defineProps(['tableData', 'totalNums', 'type_', 'refresh'])
 const emit = defineEmits(['pageChange', 'tableDataUpdate'])
@@ -113,6 +125,18 @@ watch(() => props.refresh, () => {
     emit('pageChange', currentPage.value, props.type_)
   }
 })
+const accessLogVisible = ref(false)
+const accessLogProps = ref({
+  target: null,
+  id: null
+})
+function showAccessLog(index) {
+  accessLogVisible.value = true
+  accessLogProps.value = {
+    target: 'pack',
+    id: props.tableData[index].id
+  }
+}
 </script>
 
 <style lang="scss" scoped>

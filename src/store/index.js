@@ -40,6 +40,6 @@ export const useStore = defineStore('store', () => {
       subMenus.value[index].is_open = false
     }
   }
-  const totalStatic = ref({})
-  return { isAsideCollapse, collapse, subMenus, goPage, closePage, totalStatic, token, login }
+  const totalStatistic = ref({})
+  return { isAsideCollapse, collapse, subMenus, goPage, closePage, totalStatistic, token, login }
 })

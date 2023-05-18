@@ -5,8 +5,16 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useStore } from '../store/index.js'
+import request from '../utils/request.js'
 const store = useStore()
 const { subMenus } = storeToRefs(store)
+request.get('/access_log', {
+  params: {
+    target: 'user',
+    id: '123456',
+    page: 1
+  }
+})
 </script>
 
 <style lang="scss" scoped>

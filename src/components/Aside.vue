@@ -3,7 +3,7 @@
     <div :class="['aside_', {'is-collapse_': isAsideCollapse}]">
       <div class="row-1">
         <div class="title">
-          <img src="/src/assets/logo.svg" style="width: 30px;">
+          <img src="/src/assets/logo.png" style="width: 30px; margin-right: 5px;">
           <div v-if="!isAsideCollapse" class="text">
             仓储管理系统
           </div>

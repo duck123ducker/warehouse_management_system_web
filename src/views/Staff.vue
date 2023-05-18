@@ -1,6 +1,6 @@
 <template>
   <div v-loading="isLoading" style="display: flex; align-items: center; flex-direction: column; margin: 10px 10px 0; position: relative;">
-    <el-table :data="allUsers" stripe border style="width: 100%; margin-bottom: 10px;">
+    <el-table :data="allResult.tableData" stripe border style="width: 100%; margin-bottom: 10px;">
       <el-table-column align="center" prop="id" label="账号"/>
       <el-table-column align="center" prop="nick_name" label="名称"/>
       <el-table-column align="center" prop="role" label="权限"/>
@@ -22,12 +22,20 @@
           >
             修改密码
           </el-button>
+          <el-button
+              link
+              type="primary"
+              size="small"
+              @click.prevent="showAccessLog(scope.$index)"
+          >
+            操作记录
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
     <el-pagination
         layout="prev, pager, next, jumper"
-        :total="totalStatic.user_num"
+        :total="allResult.total_num"
         :page-size="20"
         v-model:current-page="currentPage"
         :background="true"
@@ -74,6 +82,9 @@
         </div>
       </el-dialog>
     </div>
+    <el-dialog v-model="accessLogVisible" :close-on-press-escape="false" :show-close="false" width="fit-content">
+      <access-log v-if="accessLogVisible" :target="accessLogProps.target" :id="accessLogProps.id"/>
+    </el-dialog>
     <div style="position: absolute; left: 5px; top: 11px; display: flex;">
       <Plus @click="edit(-1, 'create')" class="my-icon"/>
       <Refresh style="color: #505050; margin-left: 5px;" @click="pageChange" class="my-icon"/>
@@ -84,20 +95,16 @@
 <script setup>
 import request from '../utils/request.js'
 import { ref, watch } from 'vue'
-import { useStore } from '../store/index.js'
-import { storeToRefs } from 'pinia'
 import { Plus, Refresh } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import md5 from 'js-md5'
+import AccessLog from './accessLog.vue'
 
 const isLoading = ref(true)
 const form = ref(null)
 const dialogFormVisible = ref(false)
 const isLoadingDialog = ref(false)
-const store = useStore()
-const { totalStatic } = storeToRefs(store)
 const currentPage = ref(1)
-const allUsers = ref([])
 const tempUser = ref({
   info: {
     id: '',
@@ -151,9 +158,9 @@ function submit() {
         if(res.data === 'success') {
           delete params.passwd
           if(currentMode.value === 'create') {
-            allUsers.value.unshift(params)
-            if(allUsers.value.length > 20) allUsers.value.pop()
-          }else Object.assign(allUsers.value[tempUser.value.index], params)
+            allResult.value.tableData.unshift(params)
+            if(allResult.value.tableData.length > 20) allResult.value.tableData.pop()
+          }else Object.assign(allResult.value.tableData[tempUser.value.index], params)
           isLoadingDialog.value = false
           dialogFormVisible.value = false
           ElMessage.success('修改成功！')
@@ -177,16 +184,20 @@ function edit(index, mode) {
   }
   switch(mode) {
   case 'modifyInfo':
-    tempUser.value.info = JSON.parse(JSON.stringify(allUsers.value[index]))
+    tempUser.value.info = JSON.parse(JSON.stringify(allResult.value.tableData[index]))
     break
   case 'modifyPasswd':
-    tempUser.value.info.id = allUsers.value[index].id
+    tempUser.value.info.id = allResult.value.tableData[index].id
     break
   }
   tempUser.value.index = index
   currentMode.value = mode
   dialogFormVisible.value = true
 }
+const allResult = ref({
+  tableData: [],
+  total_num: 0
+})
 watch(currentPage, () => {
   pageChange()
 }, { immediate: true })
@@ -197,9 +208,21 @@ function pageChange() {
       page: currentPage.value
     }
   }).then(res => {
-    allUsers.value = res.data
+    allResult.value = res.data
     isLoading.value = false
   })
+}
+const accessLogVisible = ref(false)
+const accessLogProps = ref({
+  target: null,
+  id: null
+})
+function showAccessLog(index) {
+  accessLogVisible.value = true
+  accessLogProps.value = {
+    target: 'user',
+    id: allResult.value.tableData[index].id
+  }
 }
 </script>
 

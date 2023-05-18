@@ -3,7 +3,7 @@
     <div class="nav-bar-container">
       <i :class="['icon-menu-hamburger', 'iconfont', {rotate: isAsideCollapse}]" @click="collapse()"/>
       <div class="header-right">
-        <div class="exit-button">
+        <div @click="logout" class="exit-button">
           <i class="icon-guanji iconfont"/>
           <div class="text">
             退出
@@ -28,6 +28,10 @@ import { Close } from '@element-plus/icons-vue'
 const store = useStore()
 const { isAsideCollapse, subMenus } = storeToRefs(store)
 const { collapse, goPage, closePage } = store
+function logout() {
+  localStorage.removeItem('token')
+  location.reload()
+}
 </script>
 
 <style lang="scss" scoped>
